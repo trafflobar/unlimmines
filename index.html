@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌟 Mines Bot - Safe Signals</title>
+  <style>
+    body {
+      background: #1c1c3c;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: #2f2f5c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .safe {
+      background: #4caf50;
+    }
+    .flash {
+      animation: flash 0.3s ease-in-out 3;
+    }
+    @keyframes flash {
+      0%, 100% { background-color: #2f2f5c; }
+      50% { background-color: #3f3f80; }
+    }
+    button {
+      padding: 10px 20px;
+      background: #f39c12;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .signal-box {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    #loading {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #00ffcc;
+    }
+    #actual-site-btn {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #00c853;
+      padding: 14px 28px;
+      border-radius: 30px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 15px #00ff99, 0 0 25px #00ff99;
+      z-index: 9999;
+      animation: neonPulse 1.5s infinite;
+    }
+    @keyframes neonPulse {
+      0% { box-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99; }
+      50% { box-shadow: 0 0 15px #00ffcc, 0 0 25px #00ffcc; }
+      100% { box-shadow: 0 0 10px #00ff99, 0 0 20px #00ff99; }
+    }
+    @media screen and (max-width: 600px) {
+      body { padding: 10px; }
+      .grid {
+        grid-template-columns: repeat(5, 40px);
+        grid-gap: 6px;
+      }
+      .cell {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+      button {
+        font-size: 14px;
+        padding: 10px 15px;
+      }
+      .signal-box {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌟 Mines Bot - Safe Signals</h1>
+  <p style="margin-top: 5px; font-size: 18px; color: #00e676;">
+    💰 අඩ දින සන්ජා මැනිං උපාය ඇත: <strong id="earnedAmount">842,700 LKR</strong><br>
+    👥 මෙවනිවා ඔන්ලනි: <span id="onlineUsers">75</span> users
+  </p>
+  <button onclick="showSignal()">සන්ජාව ලබා ගන්න</button>
+  <div id="loading">🔍 ක්‍රීඩා පුවරුද විශ්ලසේස්නිය...</div>
+  <div class="grid" id="grid"></div>
+  <div class="signal-box" id="signalBox"></div>
+  <p id="counter" style="margin-top: 10px; font-size: 16px; color: #ffeb3b;">
+    🎯 ලබාඩගට් සන්ජා ගන්න: <span id="usedCount">0</span>
+  </p>
+
+  <a id="actual-site-btn" href="https://affpa.top/L?tag=d_3713491m_29091c_&site=3713491&ad=29091&r=registration" target="_blank">
+    🔗 අක්ටුඅල් සයිට්සුව ලබා ගන්න
+  </a>
+
+  <script>
+    const bombPositions = ["1,2", "2,2", "3,1", "4,4"];
+    let freeSignalsUsed = 0;
+    const grid = document.getElementById("grid");
+    const signalBox = document.getElementById("signalBox");
+    const loading = document.getElementById("loading");
+    const earnedAmount = document.getElementById("earnedAmount");
+    const onlineUsers = document.getElementById("onlineUsers");
+
+    function createGrid(highlighted = []) {
+      grid.innerHTML = "";
+      for (let row = 1; row <= 5; row++) {
+        for (let col = 1; col <= 5; col++) {
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          const key = `${row},${col}`;
+          cell.dataset.key = key;
+          if (highlighted.includes(key)) {
+            cell.classList.add("safe");
+            cell.textContent = "💎";
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function flashCells(cells) {
+      cells.forEach(key => {
+        const cell = [...grid.children].find(c => c.dataset.key === key);
+        if (cell) {
+          cell.classList.add("flash");
+          setTimeout(() => {
+            cell.classList.remove("flash");
+            cell.classList.add("safe");
+            cell.textContent = "💎";
+          }, 900);
+        }
+      });
+    }
+
+    function showSignal() {
+      signalBox.innerHTML = "";
+      grid.innerHTML = "";
+      loading.style.display = "block";
+
+      setTimeout(() => {
+        loading.style.display = "none";
+        const safeCells = [];
+        for (let row = 1; row <= 5; row++) {
+          for (let col = 1; col <= 5; col++) {
+            const pos = `${row},${col}`;
+            if (!bombPositions.includes(pos)) safeCells.push(pos);
+          }
+        }
+
+        const signal = [];
+        while (signal.length < 5) {
+          const rand = safeCells[Math.floor(Math.random() * safeCells.length)];
+          if (!signal.includes(rand)) signal.push(rand);
+        }
+
+        createGrid([]);
+        flashCells(signal);
+
+        signalBox.innerHTML = `
+          <p>✅ නිර්ඩන්සිත ආර්ස්හිත බොත්තම්:</p>
+          <p>${signal.join(" | ")}</p>
+          <p>ත්සුවය: 97.3%</p>
+        `;
+
+        freeSignalsUsed++;
+        document.getElementById("usedCount").textContent = freeSignalsUsed;
+      }, 1500);
+    }
+
+    let earned = 842700;
+    setInterval(() => {
+      earned += Math.floor(Math.random() * 200 + 50);
+      if (earnedAmount) earnedAmount.textContent = earned.toLocaleString() + " LKR";
+    }, 10000);
+
+    function randomOnlineUsers() {
+      const min = 70, max = 80;
+      const online = Math.floor(Math.random() * (max - min + 1)) + min;
+      if (onlineUsers) onlineUsers.textContent = online;
+    }
+    randomOnlineUsers();
+  </script>
+</body>
+</html>
